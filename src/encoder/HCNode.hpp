@@ -1,7 +1,10 @@
 /**
- * TODO: file header
+ * HCNode class for implementing huffman's code. These HCNodes will make up the
+ * elements in the HCTree. An HCNode node has higher priority if it has a lower
+ * count or if it has equal count but higher ascii value.
  *
- * Author:
+ * Author: Aimee T Shao
+ * PID: A15444996
  */
 #ifndef HCNODE_HPP
 #define HCNODE_HPP
@@ -40,7 +43,28 @@ ostream& operator<<(ostream& stm, const HCNode& n) {
  * has higher prioruty.
  */
 struct HCNodePtrComp {
-    /* TODO */
-    bool operator()(HCNode*& lhs, HCNode*& rhs) const { return false; }
+    /* The comparator or compare method for HCNode*s. HCNode with lower count
+     * has higher priority. If count is same, HCNode with higher ascii value
+     * has higher priority.
+     * @param lhs Pointer to a HCNode to compare
+     * @param rhs Pointer to a HCNode to compare
+     * @return True if lhs has higher priority than rhs
+     *  False if lhs has lower priority than rhs
+     *  according to lower count or higher ascii value.*/
+    bool operator()(HCNode*& lhs, HCNode*& rhs) const {
+        // compare count
+        if (lhs->count < rhs->count) {  // lhs has higher priority
+            return false;
+        } else if (lhs->count > rhs->count) {  // rhs has higher priority
+            return true;
+        } else {  // counts are same, so compare ascii values of symbols
+            if (lhs->symbol >
+                rhs->symbol) {  // lhs has higher ascii and thus priority
+                return false;
+            } else {  // rhs has higher priority
+                return true;
+            }
+        }
+    }
 };
 #endif  // HCNODE_HPP
