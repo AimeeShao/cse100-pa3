@@ -1,7 +1,8 @@
 /**
  * HCNode class for implementing huffman's code. These HCNodes will make up the
  * elements in the HCTree. An HCNode node has higher priority if it has a lower
- * count or if it has equal count but higher ascii value.
+ * count or if it has equal count but higher ascii value. Higher priority is the
+ * c0 child if exists.
  *
  * Author: Aimee T Shao
  * PID: A15444996
