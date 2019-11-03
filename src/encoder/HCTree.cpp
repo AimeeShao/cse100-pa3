@@ -2,6 +2,8 @@
  * An HCTree that stores HCNodes. Used to encode and decode bits from ostream
  * and istream using Huffman Coding algorithm. An HCNode has higher priority
  * if it has a lower count or if it has an equal count and higher ascii value.
+ * HCNodes with higher priority is the c0 child if parent exists and the symbol
+ * of parents are based on c1 child.
  *
  * Author: Aimee T Shao
  * PID: A15444996
