@@ -33,7 +33,10 @@ class HCTree {
   public:
     /* Explicit Constructor.
      * Initializes an empty HCTree */
-    HCTree() { root = nullptr; }
+    HCTree() {
+        root = nullptr;
+        leaves = vector<HCNode*>(256);
+    }
 
     /* Deconstructor.
      * Deallocates the memory of the HCTree and all the HCNodes inside of it.

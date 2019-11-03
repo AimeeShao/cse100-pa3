@@ -27,7 +27,7 @@ void HCTree::build(const vector<unsigned int>& freqs) {
         if (freqs.at(i) != 0) {  // only add symbols that don't have 0 freq
             HCNode* node = new HCNode(freqs.at(i), i);
             // add node to leaves vector and pq
-            leaves.push_back(node);
+            leaves[i] = node;
             pq.push(node);
         }
     }
@@ -69,7 +69,31 @@ void HCTree::encode(byte symbol, BitOutputStream& out) const { /*TODO*/
  * @param symbol to encode into bits and to write to ostream
  * @param out ostream to write encoded bit to
  */
-void HCTree::encode(byte symbol, ostream& out) const { /*TODO*/
+void HCTree::encode(byte symbol, ostream& out) const {
+    HCNode* curr = leaves[symbol];  // node to keep track of encoding 0 or 1
+    vector<unsigned int> encoding;  // encoding for symbol
+
+    if (curr == nullptr) {  // symbol does not exist in tree
+        return;
+    }
+    while (curr->p) {  // loop up the tree until we reach root
+        // check if c0 or c1 child to add encoding
+        if (curr->p->c0 == curr) {
+            encoding.push_back(0);
+        } else if (curr->p->c1 == curr) {
+            encoding.push_back(1);
+        }
+        curr = curr->p;
+    }
+
+    // if no encoding, then theres only one leaf and encoding will just be 0
+    if (encoding.size() == 0) {
+        out << 0;
+    } else {  // print out encoding in reverse order
+        for (unsigned int i = encoding.size() - 1; i >= 0; i--) {
+            out << encoding[i];
+        }
+    }
 }
 
 /* Decodes the sequence of bits from the BitInputStream and

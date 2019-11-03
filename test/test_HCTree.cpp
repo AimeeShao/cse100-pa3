@@ -77,6 +77,15 @@ TEST(HCTreeTest, TEST_BUILD_LARGE) {
     ASSERT_EQ(tree.getLeaves().size(), 5);
 }
 
+TEST(HCTreeTest, TEST_ENCODE_SIMPLE) {
+    /*HCTree tree;
+    vector<unsigned int> freqs(256);
+    freqs['a'] = 1;
+    ostream os(&std::out);
+    // Assert encoding prints '0'
+    tree.encode('a', os);*/
+}
+
 class SimpleHCTreeFixture : public ::testing::Test {
   protected:
     HCTree tree;
