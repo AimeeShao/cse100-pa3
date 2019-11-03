@@ -37,7 +37,8 @@ TEST(HCTreeTest, TEST_BUILD_EMPTY) {
 
     // Assert root and leaves are empty
     ASSERT_EQ(tree.getRoot(), nullptr);
-    ASSERT_EQ(tree.getLeaves().size(), 0);
+    ASSERT_EQ(tree.getLeaves().size(), 256);
+    ASSERT_EQ(tree.getLeaves().at(0), nullptr);
 }
 
 TEST(HCTreeTest, TEST_BUILD_SIMPLE) {
@@ -50,15 +51,14 @@ TEST(HCTreeTest, TEST_BUILD_SIMPLE) {
     ASSERT_EQ(tree.getRoot()->count, 5);
     ASSERT_EQ(tree.getRoot()->symbol, 'a');
 
-    ASSERT_EQ(tree.getRoot(), tree.getLeaves().at(0));
-    ASSERT_EQ(tree.getLeaves().size(), 1);
+    ASSERT_EQ(tree.getRoot(), tree.getLeaves().at('a'));
 }
 
 /* Builds tree below:
- *       d
- *   c      d
- *  b  c  e  d
- * a b
+ *         d
+ *    b        d
+ *  c   b     e  d
+ *     a  b
  */
 TEST(HCTreeTest, TEST_BUILD_LARGE) {
     HCTree tree;
@@ -70,20 +70,9 @@ TEST(HCTreeTest, TEST_BUILD_LARGE) {
     freqs['e'] = 5;
     tree.build(freqs);
 
-    // Assert root is HCNode(e, 16) and leaves
+    // Assert root is HCNode(e, 16)
     ASSERT_EQ(tree.getRoot()->count, 16);
     ASSERT_EQ(tree.getRoot()->symbol, 'd');
-
-    ASSERT_EQ(tree.getLeaves().size(), 5);
-}
-
-TEST(HCTreeTest, TEST_ENCODE_SIMPLE) {
-    /*HCTree tree;
-    vector<unsigned int> freqs(256);
-    freqs['a'] = 1;
-    ostream os(&std::out);
-    // Assert encoding prints '0'
-    tree.encode('a', os);*/
 }
 
 class SimpleHCTreeFixture : public ::testing::Test {
@@ -109,4 +98,44 @@ TEST_F(SimpleHCTreeFixture, TEST_ENCODE) {
 TEST_F(SimpleHCTreeFixture, TEST_DECODE) {
     istringstream is("1");
     ASSERT_EQ(tree.decode(is), 'b');
+}
+
+class LargeHCTreeFixture : public ::testing::Test {
+  protected:
+    HCTree tree;
+
+  public:
+    /* Builds tree below:
+     *        d
+     *    b       d
+     *  c  b     e  d
+     *    a  b
+     */
+    LargeHCTreeFixture() {
+        vector<unsigned int> freqs(256);
+        freqs['a'] = 1;
+        freqs['b'] = 2;
+        freqs['c'] = 3;
+        freqs['d'] = 5;
+        freqs['e'] = 5;
+        tree.build(freqs);
+    }
+};
+
+TEST_F(LargeHCTreeFixture, TEST_ENCODE_LARGE) {
+    ostringstream os;
+    tree.encode('a', os);  // 010
+    tree.encode('b', os);  // 011
+    tree.encode('c', os);  // 00
+    tree.encode('d', os);  // 11
+    tree.encode('e', os);  // 10
+    // Assert correct encoding for each symbol
+    ASSERT_EQ(os.str(), "010011001110");
+}
+
+TEST_F(LargeHCTreeFixture, TEST_DECODE_LARGE) {
+    istringstream is("011");
+    ASSERT_EQ(tree.decode(is), 'b');
+    istringstream in("11");
+    ASSERT_EQ(tree.decode(in), 'd');
 }

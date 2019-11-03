@@ -90,7 +90,7 @@ void HCTree::encode(byte symbol, ostream& out) const {
     if (encoding.size() == 0) {
         out << 0;
     } else {  // print out encoding in reverse order
-        for (unsigned int i = encoding.size() - 1; i >= 0; i--) {
+        for (int i = encoding.size() - 1; i >= 0; i--) {
             out << encoding[i];
         }
     }
@@ -107,7 +107,21 @@ byte HCTree::decode(BitInputStream& in) const { return ' '; /*TODO*/ }
  * @param in istream to take input bits from
  * @return byte that represents the decoded symbol of the inputted bit
  */
-byte HCTree::decode(istream& in) const { return ' '; /*TODO*/ }
+byte HCTree::decode(istream& in) const {
+    HCNode* curr = root;
+    char bit;
+    while (in.get(bit)) {  // keep reading bits and traversing down the tree
+        if (curr == nullptr) {  // inputted decode does not exist in tree
+            return 0;
+        }
+        if (bit == 0) {
+            curr = curr->c0;
+        } else {  // bit == 1
+            curr = curr->c1;
+        }
+    }
+    return curr->symbol;
+}
 
 /* Helper for testing root node. Returns root node.
  * @return HCNode root

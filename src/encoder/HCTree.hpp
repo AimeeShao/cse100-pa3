@@ -19,7 +19,11 @@
 
 using namespace std;
 
-/** TODO: class header */
+/** Class for HCTree that builds a Huffman coding tree using HCNodes. It builds
+ * the tree using a vector of frequencies and can encode or decode symbols in
+ * the tree. Includes a root HCNode*, and a leaves vector for direct access to
+ * the symbols in the tree.
+ */
 class HCTree {
   private:
     HCNode* root;            // the root of HCTree
