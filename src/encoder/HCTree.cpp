@@ -13,8 +13,7 @@
 /* Deconstructor.
  * Deallocates the memory of the HCTree and all the HCNodes inside of it.
  */
-HCTree::~HCTree() { /* TODO */
-}
+HCTree::~HCTree() { deleteHCNodes(root); }
 
 /* Builds the HCTree from a given frequency vector. Only non-zero frequencies
  * go in the tree.
@@ -95,3 +94,20 @@ HCNode* HCTree::getRoot() const { return root; }
  * @return leaves vector
  */
 vector<HCNode*> HCTree::getLeaves() const { return leaves; }
+
+/* Helper method for deleting all HCNodes.
+ * @param node HCNode to delete subtree of and the node.
+ */
+void HCTree::deleteHCNodes(HCNode* node) {
+    // base case
+    if (node == nullptr) {
+        return;
+    }
+
+    // delete children
+    deleteHCNodes(node->c0);
+    deleteHCNodes(node->c1);
+
+    // then delete this node
+    delete (node);
+}

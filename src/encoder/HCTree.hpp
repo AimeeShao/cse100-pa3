@@ -25,6 +25,11 @@ class HCTree {
     HCNode* root;            // the root of HCTree
     vector<HCNode*> leaves;  // a vector storing pointers to all leaf HCNodes
 
+    /* Helper method for deleting all HCNodes.
+     * @param node HCNode to delete subtree of and the node.
+     */
+    void deleteHCNodes(HCNode* node);
+
   public:
     /* Explicit Constructor.
      * Initializes an empty HCTree */
