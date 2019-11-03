@@ -42,29 +42,40 @@ class HCTree {
     void build(const vector<unsigned int>& freqs);
 
     /* Writes the encoding bits of given symbol to given BitOutputStream.
-    * @param symbol to encode into bits and to write to BitOutputStream
-    * @param out BitOutputStream to write encoded bit to
-    */
+     * @param symbol to encode into bits and to write to BitOutputStream
+     * @param out BitOutputStream to write encoded bit to
+     */
     void encode(byte symbol, BitOutputStream& out) const;
 
     /* Writes the encoding bits of given symbol to ostream as 0 or 1.
-    * @param symbol to encode into bits and to write to ostream
-    * @param out ostream to write encoded bit to
-    */
+     * @param symbol to encode into bits and to write to ostream
+     * @param out ostream to write encoded bit to
+     */
     void encode(byte symbol, ostream& out) const;
 
     /* Decodes the sequence of bits from the BitInputStream and
-    * returns the coded symbol.
-    * @param in BitInputStream to take input bits from
-    * @return byte that represents the decoded symbol of the inputted bit
-    */
+     * returns the coded symbol.
+     * @param in BitInputStream to take input bits from
+     * @return byte that represents the decoded symbol of the inputted bit
+     */
     byte decode(BitInputStream& in) const;
 
-    /* Decodes the inputted bit (0,1) from the istream and returns the coded symbol.
-    * @param in istream to take input bits from
-    * @return byte that represents the decoded symbol of the inputted bit
-    */
+    /* Decodes the inputted bit (0,1) from the istream and returns the coded
+     * symbol.
+     * @param in istream to take input bits from
+     * @return byte that represents the decoded symbol of the inputted bit
+     */
     byte decode(istream& in) const;
+
+    /* Helper for testing root node. Returns root node.
+     * @return HCNode root
+     */
+    HCNode* getRoot() const;
+
+    /* Helper for testing leaves. Returns leaves vector.
+     * @return leaves vector
+     */
+    vector<HCNode*> getLeaves() const;
 };
 
 #endif  // HCTREE_HPP
