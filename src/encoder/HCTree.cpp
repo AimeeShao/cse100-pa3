@@ -23,7 +23,7 @@ void HCTree::build(const vector<unsigned int>& freqs) {
     // create priority queue for sorting nodes
     priority_queue<HCNode*, vector<HCNode*>, HCNodePtrComp> pq;
 
-    for (int i = 0; i < freqs.size(); i++) {  // loop through freqs, add leaves
+    for (unsigned int i = 0; i < freqs.size(); i++) {  // loop freqs, add leaves
         if (freqs.at(i) != 0) {  // only add symbols that don't have 0 freq
             HCNode* node = new HCNode(freqs.at(i), i);
             // add node to leaves vector and pq
@@ -109,19 +109,17 @@ byte HCTree::decode(BitInputStream& in) const { return ' '; /*TODO*/ }
  */
 byte HCTree::decode(istream& in) const {
     HCNode* curr = root;  // stores where we are in the tree
-    while (curr) {        // keep reading bits and traversing down the tree
-        // base case: return symbol if we reached end of tree
-        if (curr->c0 == nullptr && curr->c1 == nullptr) {
-            return curr->symbol;
+    char bit;
+    while (curr && in.get(bit)) {      // read bits and traverse down the tree
+        if (bit == '0' && curr->c0) {  // go left (c0)
+            curr = curr->c0;
+        } else if (bit == '1' && curr->c1) {  // go right (c1)
+            curr = curr->c1;
         }
 
-        char bit;
-        in.get(bit);  // read input
-
-        if (bit == '0') {  // go left (c0)
-            curr = curr->c0;
-        } else {  // bit == '1', go right (c1)
-            curr = curr->c1;
+        // return symbol if we reached end of tree
+        if (curr->c0 == nullptr && curr->c1 == nullptr) {
+            return curr->symbol;
         }
     }
     return 0;
