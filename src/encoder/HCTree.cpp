@@ -108,19 +108,23 @@ byte HCTree::decode(BitInputStream& in) const { return ' '; /*TODO*/ }
  * @return byte that represents the decoded symbol of the inputted bit
  */
 byte HCTree::decode(istream& in) const {
-    HCNode* curr = root;
-    char bit;
-    while (in.get(bit)) {  // keep reading bits and traversing down the tree
-        if (curr == nullptr) {  // inputted decode does not exist in tree
-            return 0;
+    HCNode* curr = root;  // stores where we are in the tree
+    while (curr) {        // keep reading bits and traversing down the tree
+        // base case: return symbol if we reached end of tree
+        if (curr->c0 == nullptr && curr->c1 == nullptr) {
+            return curr->symbol;
         }
-        if (bit == 0) {
+
+        char bit;
+        in.get(bit);  // read input
+
+        if (bit == '0') {  // go left (c0)
             curr = curr->c0;
-        } else {  // bit == 1
+        } else {  // bit == '1', go right (c1)
             curr = curr->c1;
         }
     }
-    return curr->symbol;
+    return 0;
 }
 
 /* Helper for testing root node. Returns root node.
