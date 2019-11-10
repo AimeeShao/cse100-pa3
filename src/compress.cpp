@@ -19,7 +19,10 @@
  * @param outFileName File to write compressed file to */
 void pseudoCompression(string inFileName, string outFileName) {
     ifstream in(inFileName, ios::binary);  // open inFile
-
+    string str;
+    while (getline(in, str)) {
+        cout << str;
+    }
     HCTree tree;                            // HCTree to build and help encode
     const unsigned int ASCII_MAX = 256;     // number of ascii values for HCTree
     vector<unsigned int> freqs(ASCII_MAX);  // stores freqs from input file
