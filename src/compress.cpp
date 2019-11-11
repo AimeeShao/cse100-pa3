@@ -25,7 +25,7 @@ void pseudoCompression(string inFileName, string outFileName) {
     const unsigned int ASCII_MAX = 256;     // number of ascii values for HCTree
     vector<unsigned int> freqs(ASCII_MAX);  // stores freqs from input file
 
-    byte ch;  // stores character we are reading
+    unsigned char ch;  // stores character we are reading
 
     while ((ch = in.get())) {  // get 1 character each time until no more
         freqs[ch]++;
