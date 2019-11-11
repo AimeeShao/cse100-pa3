@@ -25,10 +25,11 @@ void pseudoCompression(string inFileName, string outFileName) {
     const unsigned int ASCII_MAX = 256;     // number of ascii values for HCTree
     vector<unsigned int> freqs(ASCII_MAX);  // stores freqs from input file
 
-    unsigned char ch;  // stores character we are reading
+    char ch;  // stores character we are reading
 
-    while ((ch = in.get())) {  // get 1 character each time until no more
-        freqs[ch]++;
+    while (in.get(ch)) {  // get 1 character each time until no more
+        unsigned char uch = ch;
+        freqs[uch]++;
     }
 
     tree.build(freqs);  // build tree
@@ -39,8 +40,9 @@ void pseudoCompression(string inFileName, string outFileName) {
     }
 
     in = ifstream(inFileName, ios::binary);  // reopen inFile
-    while ((ch = in.get())) {                // get 1 character and encode
-        tree.encode(ch, out);                // output encoding
+    while (in.get(ch)) {                     // get 1 character and encode
+        unsigned char uch = ch;
+        tree.encode(uch, out);  // output encoding
     }
 
     // close files
