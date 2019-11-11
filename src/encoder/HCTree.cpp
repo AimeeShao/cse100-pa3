@@ -70,7 +70,6 @@ void HCTree::encode(byte symbol, BitOutputStream& out) const { /*TODO*/
  * @param out ostream to write encoded bit to
  */
 void HCTree::encode(byte symbol, ostream& out) const {
-    cout << symbol;
     HCNode* curr = leaves[symbol];  // node to keep track of encoding 0 or 1
     vector<unsigned int> encoding;  // encoding for symbol
 
