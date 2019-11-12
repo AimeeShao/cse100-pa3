@@ -83,9 +83,9 @@ void trueDecompression(string inFileName, string outFileName) {
     ofstream out(outFileName, ios::binary);  // open outFile
 
     unsigned char decoding;
-    while (symbolCount <= totalSymbols) {  // decode until we read all symbols
-        decoding = inBit.readBit();        // read bit
-        out << decoding;                   // output decoded char
+    while (symbolCount < totalSymbols) {  // decode until we read all symbols
+        decoding = tree.decode(inBit);
+        out << decoding;  // output decoded char
         symbolCount++;
     }
 
