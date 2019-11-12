@@ -12,10 +12,10 @@ util_dep = declare_dependency(include_directories : inc,
 # output executable file named uncompress.cpp.executable
 compress_exe = executable('compress.cpp.executable',
     sources: ['compress.cpp'],
-    dependencies: [input_dep, output_dep, hctree_dep, util_dep],
+    dependencies: [input_dep, output_dep, hctree_dep, util_dep, cxxopts_dep],
     install: true)
 
 uncompress_exe = executable('uncompress.cpp.executable', 
     sources: ['uncompress.cpp'],
-    dependencies : [input_dep, output_dep, hctree_dep, util_dep],
+    dependencies : [input_dep, output_dep, hctree_dep, util_dep, cxxopts_dep],
     install : true)

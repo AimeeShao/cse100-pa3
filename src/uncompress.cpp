@@ -9,6 +9,7 @@
 #include <fstream>
 #include <iostream>
 
+#include "/subprojects/cxxopts"
 #include "FileUtils.hpp"
 #include "HCNode.hpp"
 #include "HCTree.hpp"
@@ -59,6 +60,21 @@ void trueDecompression(string inFileName, string outFileName) {}
  * @param argv Array of arguments
  */
 int main(int argc, char* argv[]) {
+    // option parsing for command line
+    cxxopts::Options options("./uncompress",
+                             "Uncompresses files using Huffman Encoding");
+    options.positional_help(
+        "./path_to_compressed_input_file ./path_to_output_file");
+
+    bool isAsciiOutput = false;
+    string inFileName, outFileName;
+    options.allow_unrecognised_options().add_options()(
+        "ascii", "Write output in ascii mode instead of bit stream",
+        cxxopts::value<bool>(isAsciiOutput))(
+        "input", "", cxxopts::value<string>(inFileName))(
+        "output", "", cxxopts::value<string>(outFileName))(
+        "h,help", "Print help and exit");
+
     FileUtils utils;  // utilities for checking files
     const char* inFileName = (argc >= 2) ? argv[1] : "";
     const char* outFileName = (argc >= 3) ? argv[2] : "";
