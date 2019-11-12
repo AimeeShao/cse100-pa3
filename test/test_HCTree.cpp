@@ -78,6 +78,19 @@ TEST(HCTreeTest, TEST_DECODE_SIMPLE) {
     ASSERT_EQ(os.str(), "0");
 }
 
+TEST(HCTreeTest, TEST_DECODE_BIT_SIMPLE) {
+    HCTree tree;
+    vector<unsigned int> freqs(256);
+    freqs['a'] = 5;
+    tree.build(freqs);
+
+    istringstream is("0");
+    BitInputStream bis(is);
+
+    // Assert correct decoding for one char bitstream
+    ASSERT_EQ(tree.decode(bis), 'a');
+}
+
 /* Builds tree below:
  *         d
  *    b        d
@@ -133,12 +146,13 @@ TEST_F(SimpleHCTreeFixture, TEST_ENCODE_BITSTREAM) {
     // Assert encoding works
 }
 
-/*TEST_F(SimpleHCTreeFixture, TEST_DECODE_BITSTREAM) {
-    istringstream is("1");
+TEST_F(SimpleHCTreeFixture, TEST_DECODE_BITSTREAM) {
+    istringstream is("0");
     BitInputStream bis(is);
+
     // Assert correct decoding for bitstream
-    ASSERT_EQ(tree.decode(bis), 'b');
-}*/
+    ASSERT_EQ(tree.decode(bis), 'a');
+}
 
 class LargeHCTreeFixture : public ::testing::Test {
   protected:
