@@ -8,7 +8,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "/subprojects/cxxopts"
+#include "../subprojects/cxxopts/cxxopts.hpp"
 #include "FileUtils.hpp"
 #include "HCNode.hpp"
 #include "HCTree.hpp"
@@ -110,21 +110,19 @@ int main(int argc, char* argv[]) {
         "output", "", cxxopts::value<string>(outFileName))(
         "h,help", "Print help and exit");
 
+    options.parse_positional({"input", "output"});
+    auto userOptions = options.parse(argc, argv);
+
+    if (userOptions.count("help") || !FileUtils::isValidFile(inFileName) ||
+        outFileName.empty()) {
+        cout << options.help({""}) << std::endl;
+        exit(0);
+    }
+    // end option parsing
+
     FileUtils utils;  // utilities for checking files
-    const char* inFileName = (argc >= 2) ? argv[1] : "";
-    const char* outFileName = (argc >= 3) ? argv[2] : "";
 
-    const char* usage =  // usage statement
-        "Compresses files using Huffman Encoding\n"
-        "Usage:\n"
-        "  ./compress [OPTION...] ./path_to_input_file "
-        "./path_to_output_file\n\n"
-        "      --ascii\tWrite output in ascii mode instead of bit "
-        "stream\n"
-        "  -h, --help\tPrint help and exit\n";
-
-    if (!utils.isValidFile(inFileName)) {  // print error and usage
-        cout << usage << endl;
+    if (!utils.isValidFile(inFileName)) {  // invalid file
         return 0;
     } else if (utils.isEmptyFile(inFileName)) {  // empty file, create empty out
         ofstream out(outFileName, ios::binary);  // open outFile
@@ -133,7 +131,11 @@ int main(int argc, char* argv[]) {
     }
 
     // No error, then compress
-    pseudoCompression(inFileName, outFileName);
+    if (isAsciiOutput) {
+        pseudoCompression(inFileName, outFileName);
+    } else {
+        trueCompression(inFileName, outFileName);
+    }
 
     return 0;
 }
