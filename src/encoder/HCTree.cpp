@@ -62,7 +62,31 @@ void HCTree::build(const vector<unsigned int>& freqs) {
  * @param symbol to encode into bits and to write to BitOutputStream
  * @param out BitOutputStream to write encoded bit to
  */
-void HCTree::encode(byte symbol, BitOutputStream& out) const { /*TODO*/
+void HCTree::encode(byte symbol, BitOutputStream& out) const {
+    HCNode* curr = leaves[symbol];  // node to keep track of encoding 0 or 1
+    vector<unsigned int> encoding;  // encoding for symbol
+
+    if (curr == nullptr) {  // symbol does not exist in tree
+        return;
+    }
+    while (curr->p) {  // loop up the tree until we reach root
+        // check if c0 or c1 child to add encoding
+        if (curr->p->c0 == curr) {
+            encoding.push_back(0);
+        } else if (curr->p->c1 == curr) {
+            encoding.push_back(1);
+        }
+        curr = curr->p;
+    }
+
+    // if no encoding, then theres only one leaf and encoding will just be 0
+    if (encoding.size() == 0) {
+        out.writeBit(1);
+    } else {  // print out encoding bits in reverse order
+        for (int i = encoding.size() - 1; i >= 0; i--) {
+            out.writeBit(encoding[i]);
+        }
+    }
 }
 
 /* Writes the encoding bits of given symbol to ostream as 0 or 1.
@@ -101,7 +125,25 @@ void HCTree::encode(byte symbol, ostream& out) const {
  * @param in BitInputStream to take input bits from
  * @return byte that represents the decoded symbol of the inputted bit
  */
-byte HCTree::decode(BitInputStream& in) const { return ' '; /*TODO*/ }
+byte HCTree::decode(BitInputStream& in) const {
+    HCNode* curr = root;  // stores where we are in the tree
+    unsigned int bit;     // bit we read in
+
+    while (curr) {  // read bits and traverse down the tree
+        bit = in.readBit();
+        if (bit == 0 && curr->c0) {  // go left (c0)
+            curr = curr->c0;
+        } else if (bit == 1 && curr->c1) {  // go right (c1)
+            curr = curr->c1;
+        }
+
+        // return symbol if we reached end of tree
+        if (curr->c0 == nullptr && curr->c1 == nullptr) {
+            return curr->symbol;
+        }
+    }
+    return 0;
+}
 
 /* Decodes the inputted bit (0,1) from the istream and returns the coded symbol.
  * @param in istream to take input bits from
@@ -109,7 +151,8 @@ byte HCTree::decode(BitInputStream& in) const { return ' '; /*TODO*/ }
  */
 byte HCTree::decode(istream& in) const {
     HCNode* curr = root;  // stores where we are in the tree
-    char bit;
+    char bit;             // bit we read in
+
     while (curr && in.get(bit)) {      // read bits and traverse down the tree
         if (bit == '0' && curr->c0) {  // go left (c0)
             curr = curr->c0;
