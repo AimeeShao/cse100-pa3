@@ -76,14 +76,17 @@ void trueCompression(string inFileName, string outFileName) {
     ofstream out(outFileName, ios::binary);  // open outFile
     BitOutputStream outBit(out);             // Bit output stream
     for (unsigned int freq : freqs) {        // output header
-        outBit.writeBit(freq);
+        out << freq << endl;
     }
 
     in = ifstream(inFileName, ios::binary);  // reopen inFile
     while (in.get(ch)) {                     // get 1 character and encode
         unsigned char uch = ch;
-        tree.encode(uch, out);  // output encoding
+        tree.encode(uch, outBit);  // output encoding
     }
+
+    // flush last bits stored in buffer
+    outBit.flush();
 
     // close files
     in.close();

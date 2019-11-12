@@ -43,7 +43,7 @@ void pseudoDecompression(string inFileName, string outFileName) {
 
     unsigned char decoding;
     while ((decoding = tree.decode(in))) {
-        out << decoding;  // output encoding
+        out << decoding;  // output decoded char
     }
 
     // close files
@@ -51,8 +51,48 @@ void pseudoDecompression(string inFileName, string outFileName) {
     out.close();
 }
 
-/* TODO: True decompression with bitwise i/o and small header (final) */
-void trueDecompression(string inFileName, string outFileName) {}
+/* True decompression with bitwise i/o and small header (final)
+ * @param inFileName Compressed file to read from
+ * @param outFileName File to write uncompressed file to
+ */
+void trueDecompression(string inFileName, string outFileName) {
+    ifstream in(inFileName, ios::binary);  // open inFile
+    BitInputStream inBit(in);              // Bit input stream
+
+    HCTree tree;                            // HCTree to build and help decode
+    const unsigned int ASCII_MAX = 256;     // number of ascii values for HCTree
+    vector<unsigned int> freqs(ASCII_MAX);  // stores freqs from input file
+
+    char buf[BUFSIZ];        // Retrieve frequency of ascii values
+    unsigned int index = 0;  // stores ascii value of char's freq we are reading
+
+    unsigned int totalSymbols = 0;  // how many symbols to read in
+    unsigned int symbolCount = 0;   // how many symbols have we read
+
+    while (index < ASCII_MAX) {  // get freq count for each ascii char
+        in.getline(buf, BUFSIZ);
+        unsigned int count = atoi(buf);  // convert buf to unsigned int for freq
+        freqs[index] = count;
+        index++;
+
+        totalSymbols += count;  // increase totalSymbols
+    }
+
+    tree.build(freqs);  // build tree
+
+    ofstream out(outFileName, ios::binary);  // open outFile
+
+    unsigned char decoding;
+    while (symbolCount <= totalSymbols) {  // decode until we read all symbols
+        decoding = inBit.readBit();        // read bit
+        out << decoding;                   // output decoded char
+        symbolCount++;
+    }
+
+    // close files
+    in.close();
+    out.close();
+}
 
 /* Main program that runs the uncompress. Checks if input file is invalid or
  * empty.
