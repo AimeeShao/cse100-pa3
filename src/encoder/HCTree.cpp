@@ -81,7 +81,7 @@ void HCTree::encode(byte symbol, BitOutputStream& out) const {
 
     // if no encoding, then theres only one leaf and encoding will just be 0
     if (encoding.size() == 0) {
-        out.writeBit(1);
+        out.writeBit(0);
     } else {  // print out encoding bits in reverse order
         for (int i = encoding.size() - 1; i >= 0; i--) {
             out.writeBit(encoding[i]);
