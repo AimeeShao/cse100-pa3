@@ -65,28 +65,17 @@ void trueCompression(string inFileName, string outFileName) {
 
     char ch;  // stores character we are reading
 
-    unsigned int numBits = 0;     // number of bits needed to store max freq
-    unsigned int nonZeros = 0;    // number of non zero freq symbols
-    vector<int> read(ASCII_MAX);  // 1 if we read char yet, or 0
-
     while (in.get(ch)) {  // get 1 character each time until no more
         unsigned char uch = ch;
         freqs[uch]++;
-
-        if (ceil(log2(freqs[uch])) > numBits) {  // max numBits=ceil log2(freq)
-            numBits = ceil(log2(freqs[uch]));
-        }
-        if (read[uch] == 0) {  // increase nonZero if havent read yet
-            read[uch] == 1;
-            nonZeros++;
-        }
     }
 
     tree.build(freqs);  // build tree
 
     ofstream out(outFileName, ios::binary);  // open outFile
     BitOutputStream outBit(out);             // Bit output stream
-    for (unsigned int freq : freqs) {        // output header
+
+    for (unsigned int freq : freqs) {  // output header
         out << freq << endl;
     }
 
