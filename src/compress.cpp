@@ -5,6 +5,7 @@
  * Author: Aimee T Shao
  * PID: A15444996
  */
+#include <cmath>
 #include <fstream>
 #include <iostream>
 
@@ -21,7 +22,6 @@
  */
 void pseudoCompression(string inFileName, string outFileName) {
     ifstream in(inFileName, ios::binary);  // open inFile
-    string str;
 
     HCTree tree;                            // HCTree to build and help encode
     const unsigned int ASCII_MAX = 256;     // number of ascii values for HCTree
@@ -58,7 +58,6 @@ void pseudoCompression(string inFileName, string outFileName) {
  * */
 void trueCompression(string inFileName, string outFileName) {
     ifstream in(inFileName, ios::binary);  // open inFile
-    string str;
 
     HCTree tree;                            // HCTree to build and help encode
     const unsigned int ASCII_MAX = 256;     // number of ascii values for HCTree
@@ -66,9 +65,21 @@ void trueCompression(string inFileName, string outFileName) {
 
     char ch;  // stores character we are reading
 
+    unsigned int numBits = 0;     // number of bits needed to store max freq
+    unsigned int nonZeros = 0;    // number of non zero freq symbols
+    vector<int> read(ASCII_MAX);  // 1 if we read char yet, or 0
+
     while (in.get(ch)) {  // get 1 character each time until no more
         unsigned char uch = ch;
         freqs[uch]++;
+
+        if (ceil(log2(freqs[uch])) > numBits) {  // max numBits=ceil log2(freq)
+            numBits = ceil(log2(freqs[uch]));
+        }
+        if (read[uch] == 0) {  // increase nonZero if havent read yet
+            read[uch] == 1;
+            nonZeros++;
+        }
     }
 
     tree.build(freqs);  // build tree
