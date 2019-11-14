@@ -33,12 +33,10 @@ void pseudoCompression(string inFileName, string outFileName) {
     vector<unsigned int> freqs(ASCII_MAX);  // stores freqs from input file
 
     char ch;  // stores character we are reading
-    in.get(ch);
 
-    while ((int)ch) {  // get 1 character each time until no more
+    while (in.get(ch)) {  // get 1 character each time until no more
         unsigned char uch = ch;
         freqs[uch]++;
-        in.get(ch);
     }
 
     tree.build(freqs);  // build tree
@@ -49,10 +47,9 @@ void pseudoCompression(string inFileName, string outFileName) {
     }
 
     in = ifstream(inFileName, ios::binary);  // reopen inFile
-    while ((int)ch) {                        // get 1 character and encode
+    while (in.get(ch)) {                     // get 1 character and encode
         unsigned char uch = ch;
         tree.encode(uch, out);  // output encoding
-        in.get(ch);
     }
 
     // close files

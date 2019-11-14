@@ -42,13 +42,20 @@ void pseudoDecompression(string inFileName, string outFileName) {
         index++;
     }
 
+    unsigned int totalSymbols = 0;  // stores total symbols in file
+    unsigned int symbolsRead = 0;   // how many symbols we read so far
+
+    for (unsigned int i = 0; i < freqs.size(); i++) {  // gets totalSymbols
+        totalSymbols += freqs[i];
+    }
+
     tree.build(freqs);  // build tree
 
     ofstream out(outFileName, ios::binary);  // open outFile
 
-    unsigned char decoding;
-    while ((decoding = tree.decode(in))) {
-        out << decoding;  // output decoded char
+    while (symbolsRead < totalSymbols) {  // outputs decoding for all symbols
+        out << tree.decode(in);           // output decoded char
+        symbolsRead++;
     }
 
     // close files
