@@ -15,7 +15,7 @@
 #include "HCTree.hpp"
 
 #define TOTAL_SYMBOLS_BITS 32  // # of bits to represent total symbols
-#define BIT_IN_BYTE 8         // used for output symbol
+#define BIT_IN_BYTE 8          // used for output symbol
 #define BINARY 2               // binary is base 2
 #define ASCII_MAX 256          // number of ascii values for HCTree
 
@@ -32,10 +32,12 @@ void pseudoCompression(string inFileName, string outFileName) {
     vector<unsigned int> freqs(ASCII_MAX);  // stores freqs from input file
 
     char ch;  // stores character we are reading
+    in.get(ch);
 
-    while (in.get(ch)) {  // get 1 character each time until no more
+    while ((int)ch) {  // get 1 character each time until no more
         unsigned char uch = ch;
         freqs[uch]++;
+        in.get(ch);
     }
 
     tree.build(freqs);  // build tree
@@ -46,9 +48,10 @@ void pseudoCompression(string inFileName, string outFileName) {
     }
 
     in = ifstream(inFileName, ios::binary);  // reopen inFile
-    while (in.get(ch)) {                     // get 1 character and encode
+    while ((int)ch) {                        // get 1 character and encode
         unsigned char uch = ch;
         tree.encode(uch, out);  // output encoding
+        in.get(ch);
     }
 
     // close files
