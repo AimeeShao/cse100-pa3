@@ -136,6 +136,10 @@ int main(int argc, char* argv[]) {
 
     if (!utils.isValidFile(inFileName)) {  // invalid file
         return 0;
+    } else if (utils.isEmptyFile(inFileName)) {  // empty file, create empty out
+        ofstream out(outFileName, ios::binary);  // open outFile
+        out.close();                             // close outFile
+        return 0;
     }
 
     // No error, then compress

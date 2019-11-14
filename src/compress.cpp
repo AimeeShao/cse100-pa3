@@ -119,7 +119,6 @@ void trueCompression(string inFileName, string outFileName) {
             outBit.writeBit(0);
         } else {  // leaf, output 1, then symbol converted into binary
             outBit.writeBit(1);
-
             unsigned char count = childrenCount[i];
             // convert symbol to binary and output
             for (int j = BIT_IN_BYTE - 1; j >= 0; j--) {
