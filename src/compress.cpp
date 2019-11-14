@@ -15,6 +15,7 @@
 #include "HCTree.hpp"
 
 #define TOTAL_SYMBOLS_BITS 32  // # of bits to represent total symbols
+#define NON_ZEROS_BITS 9       // # of bits to represent nonZeros
 #define BIT_IN_BYTE 8          // used for output symbol
 #define BINARY 2               // binary is base 2
 #define ASCII_MAX 256          // number of ascii values for HCTree
@@ -86,7 +87,6 @@ void trueCompression(string inFileName, string outFileName) {
     for (unsigned int i = 0; i < freqs.size(); i++) {
         totalSymbols += freqs[i];
     }
-
     tree.build(freqs);  // build tree
 
     ofstream out(outFileName, ios::binary);  // open outFile
@@ -95,8 +95,8 @@ void trueCompression(string inFileName, string outFileName) {
     vector<int> childrenCount = tree.binaryRep();  // get tree rep for header
     // used to get binary for totalSymbols
     vector<unsigned int> totalSymbolBinary(TOTAL_SYMBOLS_BITS);
-    vector<unsigned int> nonZerosBinary(BIT_IN_BYTE);  // binary for nonZeros
-    vector<unsigned int> symbolBinary(BIT_IN_BYTE);    // binary for symbols
+    vector<unsigned int> nonZerosBinary(NON_ZEROS_BITS);  // binary for nonZeros
+    vector<unsigned int> symbolBinary(BIT_IN_BYTE);       // binary for symbols
 
     // convert totalSymbols to binary and output as part of header
     for (int i = TOTAL_SYMBOLS_BITS - 1; i >= 0; i--) {
@@ -108,11 +108,11 @@ void trueCompression(string inFileName, string outFileName) {
     }
 
     // convert nonZeros to binary and output as part of header
-    for (int i = BIT_IN_BYTE - 1; i >= 0; i--) {
+    for (int i = NON_ZEROS_BITS - 1; i >= 0; i--) {
         nonZerosBinary[i] = nonZeros % BINARY;
         nonZeros /= BINARY;
     }
-    for (int i = 0; i < BIT_IN_BYTE; i++) {
+    for (int i = 0; i < NON_ZEROS_BITS; i++) {
         outBit.writeBit(nonZerosBinary[i]);
     }
 

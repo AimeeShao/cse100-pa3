@@ -15,7 +15,8 @@
 #include "HCTree.hpp"
 
 #define TOTAL_SYMBOLS_BITS 32  // # of bits to represent total symbols
-#define BIT_IN_BYTE 8         // used for output symbol
+#define NON_ZEROS_BITS 9       // # of bits to represent nonZeros
+#define BIT_IN_BYTE 8          // used for output symbol
 #define BINARY 2               // binary is base 2
 #define ASCII_MAX 256          // number of ascii values for HCTree
 
@@ -73,7 +74,7 @@ void trueDecompression(string inFileName, string outFileName) {
         totalSymbols += inBit.readBit();
     }
 
-    for (int i = 0; i < BIT_IN_BYTE; i++) {  // converts binary to nonZeros
+    for (int i = 0; i < NON_ZEROS_BITS; i++) {  // converts binary to nonZeros
         nonZeros *= BINARY;
         nonZeros += inBit.readBit();
     }
