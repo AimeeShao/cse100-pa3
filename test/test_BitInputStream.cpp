@@ -21,7 +21,9 @@ TEST(BitInputStreamTests, SIMPLE_TEST) {
 
 TEST(BitInputStreamTests, FILL_TEST) {
     string bitsStr = "10000000";
-    string ascii = string(2, stoi(bitsStr, nullptr, 2));
+    string bitsStr2 = "10101010";
+    string ascii = string(1, stoi(bitsStr, nullptr, 2)) +
+                   string(1, stoi(bitsStr2, nullptr, 2));
 
     stringstream ss;
     ss.str(ascii);

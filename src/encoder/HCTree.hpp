@@ -34,6 +34,12 @@ class HCTree {
      */
     void deleteHCNodes(HCNode* node);
 
+    /* Helper for creating header of tree using recursion.
+     * @param childrenCount Vector to store 1 or 0 for tree
+     * @param curr Current node we are on
+     */
+    void binaryRepRec(vector<int>& childrenCount, HCNode* curr) const;
+
   public:
     /* Explicit Constructor.
      * Initializes an empty HCTree */
@@ -52,6 +58,12 @@ class HCTree {
      * @param freqs Frequency counts
      */
     void build(const vector<unsigned int>& freqs);
+
+    /* Builds the HCTree by reading in bit by bit.
+     * @param inBit BitInputStream to read from
+     * @param nonZeros Number of non zero freqs
+     */
+    void buildWithHeader(BitInputStream& inBit, unsigned int nonZeros);
 
     /* Writes the encoding bits of given symbol to given BitOutputStream.
      * @param symbol to encode into bits and to write to BitOutputStream
@@ -78,6 +90,12 @@ class HCTree {
      * @return byte that represents the decoded symbol of the inputted bit
      */
     byte decode(istream& in) const;
+
+    /* Used to create the header for the tree by doing post order traversal and
+     * storing symbol if leaf node or -1 for internal node.
+     * @return vector containing symbol of leaf or -1 for internal node
+     */
+    vector<int> binaryRep() const;
 
     /* Helper for testing root node. Returns root node.
      * @return HCNode root

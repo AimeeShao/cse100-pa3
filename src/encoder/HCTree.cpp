@@ -9,6 +9,10 @@
  * PID: A15444996
  */
 #include "HCTree.hpp"
+#include <stack>
+
+#define BIT_IN_BYTE 8         // used for output symbol
+#define BINARY 2               // binary is base 2
 
 /* Deconstructor.
  * Deallocates the memory of the HCTree and all the HCNodes inside of it.
@@ -56,6 +60,49 @@ void HCTree::build(const vector<unsigned int>& freqs) {
         root = pq.top();
         pq.pop();
     }
+}
+
+/* Builds the HCTree by reading in bit by bit. 0 for internal node or 1 for leaf
+ * node then reads in symbol.
+ * @param inBit BitInputStream to read from
+ * @param nonZeros Number of non zero freqs
+ */
+void HCTree::buildWithHeader(BitInputStream& inBit, unsigned int nonZeros) {
+    unsigned int headerBit = 0;
+    stack<HCNode*> nodes;  // stores nodes to build tree
+
+    // keep reading bits until we read all symbols and down to last node = root
+    while (nodes.size() > 1 || nonZeros != 0) {
+        headerBit = inBit.readBit();  // read next bit
+
+        if (headerBit == 0) {  // internal node, combine two nodes
+            HCNode* c1 = nodes.top();
+            nodes.pop();
+            HCNode* c0 = nodes.top();
+            nodes.pop();
+
+            HCNode* parent = new HCNode(0, 0, c0, c1, 0);
+            c0->p = parent;
+            c1->p = parent;
+            nodes.push(parent);
+        } else {  // symbol, so create leaf node and push to nodes stack
+
+            // recreate symbol from binary
+            unsigned char symbol = 0;
+            for (int i = 0; i < BIT_IN_BYTE; i++) {
+                symbol *= BINARY;
+                symbol += inBit.readBit();
+            }
+            HCNode* leaf = new HCNode(0, symbol, 0, 0, 0);
+            nodes.push(leaf);
+
+            // add to leaves vector for tree
+            leaves[symbol] = leaf;
+            nonZeros--;
+        }
+    }
+    root = nodes.top();  // root is last node in nodes
+    nodes.pop();
 }
 
 /* Writes the encoding bits of given symbol to given BitOutputStream.
@@ -166,6 +213,37 @@ byte HCTree::decode(istream& in) const {
         }
     }
     return 0;
+}
+
+/* Used to create the header for the tree by doing post order traversal and
+ * storing symbol if leaf node or -1 for internal node.
+ * @return vector containing symbol of leaf or -1 for internal node
+ */
+vector<int> HCTree::binaryRep() const {
+    vector<int> childrenCount;
+    binaryRepRec(childrenCount, root);
+    return childrenCount;
+}
+
+/* Helper for creating header of tree using recursion. Performs post order trav.
+ * @param childrenCount Vector to store 1 or 0 for tree
+ * @param curr Current node we are on
+ */
+void HCTree::binaryRepRec(vector<int>& childrenCount, HCNode* curr) const {
+    // base case, curr == null, return
+    if (curr == nullptr) {
+        return;
+    }
+
+    binaryRepRec(childrenCount, curr->c0);
+    binaryRepRec(childrenCount, curr->c1);
+
+    // -1 for internal node or symbol for leaf node
+    if (curr->c0 == nullptr && curr->c1 == nullptr) {
+        childrenCount.push_back(curr->symbol);
+    } else {
+        childrenCount.push_back(-1);
+    }
 }
 
 /* Helper for testing root node. Returns root node.

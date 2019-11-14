@@ -54,6 +54,55 @@ TEST(HCTreeTest, TEST_BUILD_SIMPLE) {
     ASSERT_EQ(tree.getRoot(), tree.getLeaves().at('a'));
 }
 
+TEST(HCTreeTest, TEST_BUILD_WITH_HEADER_SIMPLE) {
+    string bitsStr = "10110000";
+    string bitsStr2 = "10000000";
+    string ascii = string(1, stoi(bitsStr, nullptr, 2)) +
+                   string(1, stoi(bitsStr2, nullptr, 2));
+
+    stringstream ss;
+    ss.str(ascii);
+    BitInputStream bis(ss);
+
+    HCTree tree;
+    tree.buildWithHeader(bis, 1);
+    // Assert we created a root and leaf of 'a'
+    ASSERT_EQ(tree.getRoot()->symbol, 'a');
+    ASSERT_EQ(tree.getRoot(), tree.getLeaves().at('a'));
+}
+
+TEST(HCTreeTest, TEST_BUILD_WITH_HEADER_LARGE) {
+    HCTree tree;
+
+    // 1c 1a 1b 0 0 1e 1d 0 0 padding
+    // "101100011 101100001 101100010 0 0 101100101 101100100 0 0"
+    string bitsStr = "10110001";
+    string bitsStr2 = "11011000";
+    string bitsStr3 = "01101100";
+    string bitsStr4 = "01000101";
+    string bitsStr5 = "10010110";
+    string bitsStr6 = "11001000";
+    string bitsStr7 = "01010101";
+
+    string ascii = string(1, stoi(bitsStr, nullptr, 2)) +
+                   string(1, stoi(bitsStr2, nullptr, 2)) +
+                   string(1, stoi(bitsStr3, nullptr, 2)) +
+                   string(1, stoi(bitsStr4, nullptr, 2)) +
+                   string(1, stoi(bitsStr5, nullptr, 2)) +
+                   string(1, stoi(bitsStr6, nullptr, 2)) +
+                   string(1, stoi(bitsStr7, nullptr, 2));
+
+    stringstream ss;
+    ss.str(ascii);
+    BitInputStream bis(ss);
+
+    tree.buildWithHeader(bis, 5);
+
+    // Assert we created correct tree with specific symbols
+    ASSERT_EQ(tree.getRoot()->c0->c1->c1->symbol, 'b');
+    ASSERT_EQ(tree.getRoot()->c1->c0->symbol, 'e');
+}
+
 TEST(HCTreeTest, TEST_ENCODE_SIMPLE) {
     HCTree tree;
     vector<unsigned int> freqs(256);
@@ -89,6 +138,18 @@ TEST(HCTreeTest, TEST_DECODE_BIT_SIMPLE) {
 
     // Assert correct decoding for one char bitstream
     ASSERT_EQ(tree.decode(bis), 'a');
+}
+
+TEST(HCTreeTest, TEST_BINARY_REP_SIMPLE) {
+    HCTree tree;
+    vector<unsigned int> freqs(256);
+    freqs['a'] = 5;
+    tree.build(freqs);
+
+    vector<int> childrenCount;
+    childrenCount.push_back('a');
+    // Assert vector contains just 'a' for root
+    ASSERT_EQ(childrenCount, tree.binaryRep());
 }
 
 /* Builds tree below:
@@ -193,4 +254,20 @@ TEST_F(LargeHCTreeFixture, TEST_DECODE_LARGE) {
     ASSERT_EQ(tree.decode(is), 'b');
     istringstream in("11");
     ASSERT_EQ(tree.decode(in), 'd');
+}
+
+TEST_F(LargeHCTreeFixture, TEST_BINARY_REP) {
+    // Assert correct header for large tree
+    vector<int> childrenCount;
+    childrenCount.push_back('c');
+    childrenCount.push_back('a');
+    childrenCount.push_back('b');
+    childrenCount.push_back(-1);
+    childrenCount.push_back(-1);
+    childrenCount.push_back('e');
+    childrenCount.push_back('d');
+    childrenCount.push_back(-1);
+    childrenCount.push_back(-1);
+
+    ASSERT_EQ(childrenCount, tree.binaryRep());
 }
