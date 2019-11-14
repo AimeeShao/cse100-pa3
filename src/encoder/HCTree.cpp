@@ -11,8 +11,10 @@
 #include "HCTree.hpp"
 #include <stack>
 
-#define BIT_IN_BYTE 8         // used for output symbol
-#define BINARY 2               // binary is base 2
+#define BIT_IN_BYTE 8  // used for output symbol
+#define BINARY 2       // binary is base 2
+#define ZERO_LITERAL '0'
+#define ONE_LITERAL '1'
 
 /* Deconstructor.
  * Deallocates the memory of the HCTree and all the HCNodes inside of it.
@@ -76,11 +78,13 @@ void HCTree::buildWithHeader(BitInputStream& inBit, unsigned int nonZeros) {
         headerBit = inBit.readBit();  // read next bit
 
         if (headerBit == 0) {  // internal node, combine two nodes
+            // gets first two leaf nodes
             HCNode* c1 = nodes.top();
             nodes.pop();
             HCNode* c0 = nodes.top();
             nodes.pop();
 
+            // creates the parent for those two leaf nodes
             HCNode* parent = new HCNode(0, 0, c0, c1, 0);
             c0->p = parent;
             c1->p = parent;
@@ -93,6 +97,8 @@ void HCTree::buildWithHeader(BitInputStream& inBit, unsigned int nonZeros) {
                 symbol *= BINARY;
                 symbol += inBit.readBit();
             }
+
+            // create new leaf node and push to nodes stack
             HCNode* leaf = new HCNode(0, symbol, 0, 0, 0);
             nodes.push(leaf);
 
@@ -200,10 +206,10 @@ byte HCTree::decode(istream& in) const {
     HCNode* curr = root;  // stores where we are in the tree
     char bit;             // bit we read in
 
-    while (curr && in.get(bit)) {      // read bits and traverse down the tree
-        if (bit == '0' && curr->c0) {  // go left (c0)
+    while (curr && in.get(bit)) {  // read bits and traverse down the tree
+        if (bit == ZERO_LITERAL && curr->c0) {  // go left (c0)
             curr = curr->c0;
-        } else if (bit == '1' && curr->c1) {  // go right (c1)
+        } else if (bit == ONE_LITERAL && curr->c1) {  // go right (c1)
             curr = curr->c1;
         }
 
@@ -220,7 +226,8 @@ byte HCTree::decode(istream& in) const {
  * @return vector containing symbol of leaf or -1 for internal node
  */
 vector<int> HCTree::binaryRep() const {
-    vector<int> childrenCount;
+    vector<int> childrenCount;  // header
+    // calls recursive binary rep on root
     binaryRepRec(childrenCount, root);
     return childrenCount;
 }
@@ -235,6 +242,7 @@ void HCTree::binaryRepRec(vector<int>& childrenCount, HCNode* curr) const {
         return;
     }
 
+    // recursive calls for children
     binaryRepRec(childrenCount, curr->c0);
     binaryRepRec(childrenCount, curr->c1);
 
